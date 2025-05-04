@@ -1,57 +1,99 @@
-import { useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import Layout from '../components/Layout';
+import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import Layout from "../components/Layout";
 
 const DetailPage = () => {
-  const { date } = useParams();
-  const [data, setData] = useState(null);
+  const { id } = useParams();
+  console.log("Detail ID:", id); // Harus muncul UUID valid
+
+  const [entry, setEntry] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDetail = async () => {
+    if (!id) {
+      console.warn('ID tidak tersedia di URL');
+      return;
+    }
+  
+    const fetchEntry = async () => {
       const { data, error } = await supabase
         .from('attendance')
-        .select()
-        .eq('date', date)
+        .select('*')
+        .eq('id', id)
         .single();
-
-      if (!error) setData(data);
-      else console.error('Gagal mengambil detail:', error);
+  
+      if (error) {
+        console.error('Gagal mengambil data:', error);
+      } else {
+        setEntry(data);
+      }
+      setLoading(false);
     };
+  
+    fetchEntry();
+  }, [id]);
+  
 
-    fetchDetail();
-  }, [date]);
+//   useEffect(() => {
+//     const fetchEntry = async () => {
+//       const { data, error } = await supabase
+//         .from("attendance")
+//         .select("*")
+//         .eq("id", id)
+//         .single();
+
+//       if (error) {
+//         console.error("Gagal mengambil data:", error);
+//       } else {
+//         setEntry(data);
+//       }
+//       setLoading(false);
+//     };
+
+//     fetchEntry();
+//   }, [id]);
 
   return (
     <Layout>
-    <div style={{ padding: '2rem' }}>
-      <Link to="/">← Kembali ke Dashboard</Link>
-      <h2>Detail Absensi: {date}</h2>
+      <Link to="/data" className="btn btn-sm btn-outline-secondary mb-3">
+        ← Kembali
+      </Link>
 
-      {data ? (
-        <>
-          <p><strong>Catatan:</strong> {data.note || '-'}</p>
-          <table border="1" cellPadding="8" style={{ marginTop: '1rem' }}>
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(data.attendance).map(([name, status]) => (
-                <tr key={name}>
-                  <td>{name}</td>
-                  <td>{status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+      {loading ? (
+        <p>Memuat detail...</p>
+      ) : !entry ? (
+        <p className="text-danger">Data tidak ditemukan.</p>
       ) : (
-        <p>Memuat data...</p>
+        <>
+          <h2>Detail Absensi</h2>
+          <p>
+            <strong>Tanggal:</strong> {entry.date}
+          </p>
+          <p>
+            <strong>Catatan:</strong> {entry.note || "-"}
+          </p>
+
+          <div className="table-responsive mt-3">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(entry.attendance).map(([name, status]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    <td>{status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
-    </div>
     </Layout>
   );
 };

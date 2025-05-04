@@ -18,7 +18,7 @@ import TanggalDataPage from "./components/TanggalDataPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
-  { path: "/detail/:date", element: <DetailPage /> },
+  { path: "/detail/:id", element: <DetailPage /> },
   { path: "/dashboard", element: <RekapBulananPage /> },
   { path: "/data", element: <TanggalDataPage /> },
 ]);
