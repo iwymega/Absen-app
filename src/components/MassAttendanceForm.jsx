@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { members } from '../data/members';
-import { supabase } from '../lib/supabase';
+import { useState } from "react";
+import { members } from "../data/members";
+import { supabase } from "../lib/supabase";
 
 const MassAttendanceForm = () => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
 
   const [attendance, setAttendance] = useState(() =>
     members.reduce((acc, name) => {
-      acc[name] = ''; // status awal kosong
+      acc[name] = ""; // status awal kosong
       return acc;
     }, {})
   );
@@ -25,11 +25,11 @@ const MassAttendanceForm = () => {
     e.preventDefault();
 
     const filteredAttendance = Object.fromEntries(
-      Object.entries(attendance).filter(([_, status]) => status !== '')
+      Object.entries(attendance).filter(([_, status]) => status !== "")
     );
 
     if (Object.keys(filteredAttendance).length === 0) {
-      alert('Silakan isi minimal satu kehadiran.');
+      alert("Silakan isi minimal satu kehadiran.");
       return;
     }
 
@@ -39,19 +39,19 @@ const MassAttendanceForm = () => {
       note: note || null,
     };
 
-    const { error } = await supabase
-      .from('attendance')
-      .upsert([payload]); // gunakan upsert supaya update kalau tanggal sudah ada
+    // const { error } = await supabase.from("attendance").upsert([payload]); // gunakan upsert supaya update kalau tanggal sudah ada
+
+    const { error } = await supabase.from("attendance").insert([payload]); // SELALU menyimpan data baru (meski tanggal sama)
 
     if (error) {
       console.error(error);
-      alert('Gagal menyimpan data.');
+      alert("Gagal menyimpan data.");
     } else {
-      alert('Absensi berhasil disimpan!');
-      setNote('');
+      alert("Absensi berhasil disimpan!");
+      setNote("");
       setAttendance(
         members.reduce((acc, name) => {
-          acc[name] = '';
+          acc[name] = "";
           return acc;
         }, {})
       );
@@ -68,12 +68,13 @@ const MassAttendanceForm = () => {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            style={{ marginLeft: '1rem' }}
-            className='form-control'
+            style={{ marginLeft: "1rem" }}
+            className="form-control"
           />
         </label>
 
-        <br /><br />
+        <br />
+        <br />
         <label>
           Catatan:
           <br />
@@ -86,7 +87,7 @@ const MassAttendanceForm = () => {
           />
         </label>
 
-        <table border="1" cellPadding="8" style={{ marginTop: '1rem' }}>
+        <table border="1" cellPadding="8" style={{ marginTop: "1rem" }}>
           <thead>
             <tr>
               <th>Nama</th>
@@ -104,8 +105,8 @@ const MassAttendanceForm = () => {
                     type="radio"
                     name={`status-${name}`}
                     value="Hadir"
-                    checked={attendance[name] === 'Hadir'}
-                    onChange={() => handleStatusChange(name, 'Hadir')}
+                    checked={attendance[name] === "Hadir"}
+                    onChange={() => handleStatusChange(name, "Hadir")}
                   />
                 </td>
                 <td>
@@ -113,8 +114,8 @@ const MassAttendanceForm = () => {
                     type="radio"
                     name={`status-${name}`}
                     value="Izin"
-                    checked={attendance[name] === 'Izin'}
-                    onChange={() => handleStatusChange(name, 'Izin')}
+                    checked={attendance[name] === "Izin"}
+                    onChange={() => handleStatusChange(name, "Izin")}
                   />
                 </td>
                 <td>
@@ -122,9 +123,9 @@ const MassAttendanceForm = () => {
                     type="radio"
                     name={`status-${name}`}
                     value="Tanpa Keterangan"
-                    checked={attendance[name] === 'Tanpa Keterangan'}
+                    checked={attendance[name] === "Tanpa Keterangan"}
                     onChange={() =>
-                      handleStatusChange(name, 'Tanpa Keterangan')
+                      handleStatusChange(name, "Tanpa Keterangan")
                     }
                   />
                 </td>
@@ -133,7 +134,11 @@ const MassAttendanceForm = () => {
           </tbody>
         </table>
 
-        <button className='btn btn-primary' type="submit" style={{ marginTop: '1rem' }}>
+        <button
+          className="btn btn-primary"
+          type="submit"
+          style={{ marginTop: "1rem" }}
+        >
           Simpan Absensi
         </button>
       </form>
