@@ -4,6 +4,7 @@ import MassAttendanceForm from './components/MassAttendanceForm';
 import DashboardRekapBulanan from './components/DashboardRekapBulanan';
 import TanggalDataPage from './components/TanggalDataPage';
 import RekapBulananPage from './components/RekapBulananPage';
+import MemberManagementPage from './pages/MemberManagementPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('form');
@@ -45,6 +46,14 @@ function App() {
                 Rekap Bulanan
               </button>
             </li>
+            <li className="nav-item">
+              <button
+                className={`nav-link ${activeTab === 'members' ? 'active' : ''}`}
+                onClick={() => setActiveTab('members')}
+                >
+                Manajemen Anggota
+                </button>
+            </li>
           </ul>
         </div>
         <div className="card-body">
@@ -52,6 +61,7 @@ function App() {
           {activeTab === 'dashboard' && <DashboardRekapBulanan />}
           {activeTab === 'tanggal' && <TanggalDataPage />}
           {activeTab === 'rekap' && <RekapBulananPage />}
+          {activeTab === 'members' && <MemberManagementPage />}
         </div>
       </div>
     </Layout>

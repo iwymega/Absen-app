@@ -15,12 +15,14 @@ import App from "./App";
 import DetailPage from "./pages/DetailPage";
 import RekapBulananPage from "./components/RekapBulananPage";
 import TanggalDataPage from "./components/TanggalDataPage";
+import MemberManagementPage from "./pages/MemberManagementPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/detail/:id", element: <DetailPage /> },
   { path: "/dashboard", element: <RekapBulananPage /> },
   { path: "/data", element: <TanggalDataPage /> },
+  { path: '/members', element: <MemberManagementPage /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
