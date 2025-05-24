@@ -2,7 +2,6 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
-
 import { members } from "../data/members";
 
 const STATUS_OPTIONS = ["Hadir", "Izin", "Tanpa Keterangan"];
@@ -17,7 +16,6 @@ const DetailPage = () => {
   const [noteEdit, setNoteEdit] = useState("");
   const [attendanceEdit, setAttendanceEdit] = useState({});
 
-  // Fetch detail absensi
   useEffect(() => {
     if (!id) {
       console.warn("ID tidak tersedia di URL");
@@ -37,8 +35,6 @@ const DetailPage = () => {
       } else {
         setEntry(data);
         setNoteEdit(data.note || "");
-        // setAttendanceEdit(data.attendance || {});
-
         const fullAttendance = members.reduce((acc, name) => {
           acc[name] = data.attendance?.[name] || "";
           return acc;
@@ -52,7 +48,6 @@ const DetailPage = () => {
     fetchEntry();
   }, [id]);
 
-  // Handler hapus
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Yakin ingin menghapus entri ini?");
     if (!confirmDelete) return;
@@ -67,7 +62,6 @@ const DetailPage = () => {
     }
   };
 
-  // Handler update
   const handleUpdate = async () => {
     const { error } = await supabase
       .from("attendance")
@@ -89,106 +83,120 @@ const DetailPage = () => {
 
   return (
     <Layout>
-      <Link to="/data" className="btn btn-sm btn-outline-secondary mb-3">
-        ← Kembali
-      </Link>
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <Link
+          to="/data"
+          className="text-blue-600 hover:underline text-sm inline-block mb-4"
+        >
+          ← Kembali ke Data
+        </Link>
 
-      {loading ? (
-        <p>Memuat detail...</p>
-      ) : !entry ? (
-        <p className="text-danger">Data tidak ditemukan.</p>
-      ) : (
-        <>
-          <div className="d-flex gap-2 mb-3">
-            <button
-              className="btn btn-sm btn-warning"
-              onClick={() => setEditMode(true)}
-            >
-              Edit Absensi
-            </button>
-            <button className="btn btn-sm btn-danger" onClick={handleDelete}>
-              Hapus Entri Ini
-            </button>
-          </div>
-
-          <h2>Detail Absensi</h2>
-          <p>
-            <strong>Tanggal:</strong> {entry.date}
-          </p>
-          <p>
-            <strong>Catatan:</strong> {entry.note || "-"}
-          </p>
-
-          {!editMode ? (
-            <div className="table-responsive mt-3">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Nama</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(entry.attendance).map(([name, status]) => (
-                    <tr key={name}>
-                      <td>{name}</td>
-                      <td>{status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {loading ? (
+          <p className="text-gray-500">Memuat detail...</p>
+        ) : !entry ? (
+          <p className="text-red-500">Data tidak ditemukan.</p>
+        ) : (
+          <>
+            <div className="flex gap-4 mb-6">
+              <button
+                className="bg-yellow-400 text-white px-4 py-2 rounded-md text-sm hover:bg-yellow-500"
+                onClick={() => setEditMode(true)}
+              >
+                Edit Absensi
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Hapus Entri Ini
+              </button>
             </div>
-          ) : (
-            <>
-              <textarea
-                className="form-control mb-3"
-                rows={3}
-                value={noteEdit}
-                onChange={(e) => setNoteEdit(e.target.value)}
-              />
 
-              <div className="table-responsive">
-                <table className="table table-bordered">
-                  <thead>
+            <h2 className="text-2xl font-bold mb-2">Detail Absensi</h2>
+            <p className="mb-1">
+              <span className="font-semibold">Tanggal:</span> {entry.date}
+            </p>
+            <p className="mb-4">
+              <span className="font-semibold">Catatan:</span>{" "}
+              {entry.note || "-"}
+            </p>
+
+            {!editMode ? (
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-300 text-sm">
+                  <thead className="bg-gray-100">
                     <tr>
-                      <th>Nama</th>
-                      {STATUS_OPTIONS.map((s) => (
-                        <th key={s}>{s}</th>
-                      ))}
+                      <th className="px-4 py-2 text-left border">Nama</th>
+                      <th className="px-4 py-2 text-left border">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.keys(attendanceEdit).map((name) => (
-                      <tr key={name}>
-                        <td>{name}</td>
-                        {STATUS_OPTIONS.map((status) => (
-                          <td key={status}>
-                            <input
-                              type="radio"
-                              name={`status-${name}`}
-                              checked={attendanceEdit[name] === status}
-                              onChange={() =>
-                                setAttendanceEdit((prev) => ({
-                                  ...prev,
-                                  [name]: status,
-                                }))
-                              }
-                            />
-                          </td>
-                        ))}
+                    {Object.entries(entry.attendance).map(([name, status]) => (
+                      <tr key={name} className="even:bg-gray-50">
+                        <td className="px-4 py-2 border">{name}</td>
+                        <td className="px-4 py-2 border">{status}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+            ) : (
+              <>
+                <textarea
+                  className="w-full border rounded-md p-2 mb-4"
+                  rows={3}
+                  value={noteEdit}
+                  onChange={(e) => setNoteEdit(e.target.value)}
+                />
 
-              <button className="btn btn-primary" onClick={handleUpdate}>
-                Simpan Perubahan
-              </button>
-            </>
-          )}
-        </>
-      )}
+                <div className="overflow-x-auto mb-4">
+                  <table className="w-full border border-gray-300 text-sm">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-4 py-2 border text-left">Nama</th>
+                        {STATUS_OPTIONS.map((s) => (
+                          <th key={s} className="px-2 py-2 border">
+                            {s}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(attendanceEdit).map((name) => (
+                        <tr key={name} className="even:bg-gray-50">
+                          <td className="px-4 py-2 border">{name}</td>
+                          {STATUS_OPTIONS.map((status) => (
+                            <td key={status} className="px-2 py-2 border text-center">
+                              <input
+                                type="radio"
+                                name={`status-${name}`}
+                                checked={attendanceEdit[name] === status}
+                                onChange={() =>
+                                  setAttendanceEdit((prev) => ({
+                                    ...prev,
+                                    [name]: status,
+                                  }))
+                                }
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  onClick={handleUpdate}
+                >
+                  Simpan Perubahan
+                </button>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </Layout>
   );
 };

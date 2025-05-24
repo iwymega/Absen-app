@@ -9,7 +9,7 @@ const MassAttendanceForm = () => {
 
   const [attendance, setAttendance] = useState(() =>
     members.reduce((acc, name) => {
-      acc[name] = ""; // status awal kosong
+      acc[name] = "";
       return acc;
     }, {})
   );
@@ -39,9 +39,7 @@ const MassAttendanceForm = () => {
       note: note || null,
     };
 
-    // const { error } = await supabase.from("attendance").upsert([payload]); // gunakan upsert supaya update kalau tanggal sudah ada
-
-    const { error } = await supabase.from("attendance").insert([payload]); // SELALU menyimpan data baru (meski tanggal sama)
+    const { error } = await supabase.from("attendance").insert([payload]);
 
     if (error) {
       console.error(error);
@@ -59,85 +57,65 @@ const MassAttendanceForm = () => {
   };
 
   return (
-    <div>
-      <h2>Absensi Massal</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Tanggal:
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-6">
+      <h2 className="text-2xl font-bold mb-6">Absensi Massal</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <label className="md:w-1/4 font-medium">Tanggal:</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            style={{ marginLeft: "1rem" }}
-            className="form-control"
+            className="border rounded-md px-3 py-2 w-full md:w-1/2"
           />
-        </label>
+        </div>
 
-        <br />
-        <br />
-        <label>
-          Catatan:
-          <br />
+        <div>
+          <label className="block font-medium mb-1">Catatan:</label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={3}
-            cols={50}
+            className="w-full border rounded-md p-2"
             placeholder="Contoh: Rapat koordinasi, kegiatan lapangan, dll"
           />
-        </label>
+        </div>
 
-        <table border="1" cellPadding="8" style={{ marginTop: "1rem" }}>
-          <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Hadir</th>
-              <th>Izin</th>
-              <th>Tanpa Keterangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map((name) => (
-              <tr key={name}>
-                <td>{name}</td>
-                <td>
-                  <input
-                    type="radio"
-                    name={`status-${name}`}
-                    value="Hadir"
-                    checked={attendance[name] === "Hadir"}
-                    onChange={() => handleStatusChange(name, "Hadir")}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="radio"
-                    name={`status-${name}`}
-                    value="Izin"
-                    checked={attendance[name] === "Izin"}
-                    onChange={() => handleStatusChange(name, "Izin")}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="radio"
-                    name={`status-${name}`}
-                    value="Tanpa Keterangan"
-                    checked={attendance[name] === "Tanpa Keterangan"}
-                    onChange={() =>
-                      handleStatusChange(name, "Tanpa Keterangan")
-                    }
-                  />
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border border-gray-300 mt-4">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border">Nama</th>
+                <th className="p-2 border">Hadir</th>
+                <th className="p-2 border">Izin</th>
+                <th className="p-2 border">Tanpa Keterangan</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {members.map((name) => (
+                <tr key={name} className="text-center even:bg-gray-50">
+                  <td className="p-2 border font-medium text-left">{name}</td>
+                  {["Hadir", "Izin", "Tanpa Keterangan"].map((status) => (
+                    <td key={status} className="p-2 border">
+                      <input
+                        type="radio"
+                        name={`status-${name}`}
+                        value={status}
+                        checked={attendance[name] === status}
+                        onChange={() => handleStatusChange(name, status)}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <button
-          className="btn btn-primary"
           type="submit"
-          style={{ marginTop: "1rem" }}
+          className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
         >
           Simpan Absensi
         </button>

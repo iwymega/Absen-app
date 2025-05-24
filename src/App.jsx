@@ -1,67 +1,49 @@
-import { useState } from 'react';
-import Layout from './components/Layout';
-import MassAttendanceForm from './components/MassAttendanceForm';
-import DashboardRekapBulanan from './components/DashboardRekapBulanan';
-import TanggalDataPage from './components/TanggalDataPage';
-import RekapBulananPage from './components/RekapBulananPage';
-import MemberManagementPage from './pages/MemberManagementPage';
+import { useState } from "react";
+import Layout from "./components/Layout";
+import MassAttendanceForm from "./components/MassAttendanceForm";
+import DashboardRekapBulanan from "./components/DashboardRekapBulanan";
+import TanggalDataPage from "./components/TanggalDataPage";
+import RekapBulananPage from "./components/RekapBulananPage";
+import MemberManagementPage from "./pages/MemberManagementPage";
 
 function App() {
-  const [activeTab, setActiveTab] = useState('form');
+  const [activeTab, setActiveTab] = useState("form");
+
+  const tabs = [
+    { key: "form", label: "Form Absensi" },
+    { key: "tanggal", label: "Data Absensi per Tanggal" },
+    // { key: "dashboard", label: "Dashboard" },
+    // { key: "rekap", label: "Rekap Bulanan" },
+    // { key: "members", label: "Manajemen Anggota" },
+  ];
 
   return (
     <Layout>
-      <div className="card">
-        <div className="card-header">
-          <ul className="nav nav-tabs card-header-tabs">
-            <li className="nav-item">
+      <div className="bg-white shadow-md rounded-md p-6 max-w-5xl mx-auto mt-6">
+        <div className="mb-6 border-b">
+          <nav className="flex space-x-4">
+            {tabs.map((tab) => (
               <button
-                className={`nav-link ${activeTab === 'form' ? 'active' : ''}`}
-                onClick={() => setActiveTab('form')}
+                key={tab.key}
+                className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
+                  activeTab === tab.key
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-600 hover:text-blue-600 hover:border-blue-300"
+                }`}
+                onClick={() => setActiveTab(tab.key)}
               >
-                Form Absensi
+                {tab.label}
               </button>
-            </li>
-            {/* <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-                onClick={() => setActiveTab('dashboard')}
-              >
-                Dashboard
-              </button>
-            </li> */}
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'tanggal' ? 'active' : ''}`}
-                onClick={() => setActiveTab('tanggal')}
-              >
-                Data Absensi per Tanggal
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'rekap' ? 'active' : ''}`}
-                onClick={() => setActiveTab('rekap')}
-              >
-                Rekap Bulanan
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'members' ? 'active' : ''}`}
-                onClick={() => setActiveTab('members')}
-                >
-                Manajemen Anggota
-                </button>
-            </li>
-          </ul>
+            ))}
+          </nav>
         </div>
-        <div className="card-body">
-          {activeTab === 'form' && <MassAttendanceForm />}
-          {activeTab === 'dashboard' && <DashboardRekapBulanan />}
-          {activeTab === 'tanggal' && <TanggalDataPage />}
-          {activeTab === 'rekap' && <RekapBulananPage />}
-          {activeTab === 'members' && <MemberManagementPage />}
+
+        <div>
+          {activeTab === "form" && <MassAttendanceForm />}
+          {activeTab === "dashboard" && <DashboardRekapBulanan />}
+          {activeTab === "tanggal" && <TanggalDataPage />}
+          {activeTab === "rekap" && <RekapBulananPage />}
+          {activeTab === "members" && <MemberManagementPage />}
         </div>
       </div>
     </Layout>
